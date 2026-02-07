@@ -4,6 +4,8 @@ version: '3.8'
 services:
   api:
     build: .
+    image: programus/python-code-execution-api:${TAG:-latest}
+    container_name: python_code_execution_api
     ports:
       - "8000:8000"
     environment:
