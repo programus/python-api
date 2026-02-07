@@ -23,7 +23,7 @@ services:
     read_only: true
     tmpfs:
       # Mount /tmp with proper permissions for the apiuser (uid 1000)
-      - /tmp:uid=1000,gid=1000,mode=1777
+      - /tmp:uid=1000,gid=1000,mode=1777,exec
     # Security options
     security_opt:
       - no-new-privileges:true
