@@ -5,13 +5,14 @@ A FastAPI-based Python API platform that executes Python code in isolated virtua
 ## Features
 
 - **Code Execution Endpoint**: Accepts JSON with Python code and dependencies, returns execution results
-- **Isolated Execution**: Each code execution runs in a separate Python virtual environment created with `uv`
-- **Fast Dependency Management**: Uses `uv` for ultra-fast package installation
+- **Isolated Execution**: Each code execution runs in a separate Python virtual environment
+- **Named Virtual Environments**: Optionally cache and reuse virtual environments by name
+- **Dependency Management**: Automatically installs required libraries before code execution
 - **Error Handling**: Captures and reports both standard output and errors
 
-## Installation
+## Development Setup
 
-### Option 1: Local Installation
+This project uses `uv` for development dependency management.
 
 1. Clone the repository:
 ```bash
@@ -24,12 +25,29 @@ cd python-api
 pip install uv
 ```
 
-3. Install dependencies with uv:
+3. Sync dependencies (creates `.venv` and installs all dependencies):
 ```bash
-uv pip install --system -r requirements.txt
+uv sync
 ```
 
-Or with pip:
+4. Activate the virtual environment:
+```bash
+source .venv/bin/activate  # On Linux/macOS
+# or
+.venv\Scripts\activate  # On Windows
+```
+
+## Installation
+
+### Option 1: Local Installation (for production/deployment)
+
+1. Clone the repository:
+```bash
+git clone https://github.com/programus/python-api.git
+cd python-api
+```
+
+2. Install dependencies with pip:
 ```bash
 pip install -r requirements.txt
 ```
@@ -89,12 +107,17 @@ Executes Python code in an isolated virtual environment.
 ```json
 {
   "code": "print('Hello, World!')",
-  "lib": ["requests==2.31.0", "numpy==1.24.0"]
+  "lib": ["requests==2.31.0", "numpy==1.24.0"],
+  "name": "my-env"
 }
 ```
 
 - `code` (string, required): Python code to execute
 - `lib` (array of strings, optional): List of libraries in requirements.txt format
+- `name` (string, optional): Name for caching the virtual environment. If provided:
+  - The venv will be cached and reused for subsequent requests with the same name
+  - If the `lib` list changes, the venv will be recreated
+  - If the `lib` list is the same, the existing venv is reused (faster execution)
 
 **Response:**
 ```json
@@ -180,6 +203,41 @@ Response:
   "output": "",
   "error": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nValueError: This is a test error\n"
 }
+```
+
+#### Example 5: Named Virtual Environment (Caching)
+
+First request creates the venv:
+```bash
+curl -X POST "http://localhost:8000/execute" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "import requests\nprint(f\"Requests version: {requests.__version__}\")",
+    "lib": ["requests==2.31.0"],
+    "name": "my-requests-env"
+  }'
+```
+
+Second request reuses the same venv (faster):
+```bash
+curl -X POST "http://localhost:8000/execute" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "import requests\nprint(\"Using cached environment!\")",
+    "lib": ["requests==2.31.0"],
+    "name": "my-requests-env"
+  }'
+```
+
+If you change the libraries, the venv is recreated:
+```bash
+curl -X POST "http://localhost:8000/execute" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "import requests\nimport pandas as pd\nprint(\"New environment created!\")",
+    "lib": ["requests==2.31.0", "pandas==2.0.0"],
+    "name": "my-requests-env"
+  }'
 ```
 
 ## Testing

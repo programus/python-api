@@ -1,15 +1,30 @@
 # Quick Start Guide
 
-## Start the Server
+# Quick Start Guide
+
+## Development Setup (with uv)
 
 ```bash
-# Local installation
-# First install uv (if not already installed)
+# Install uv
 pip install uv
 
-# Then install dependencies with uv (or pip)
-uv pip install --system -r requirements.txt
-# Or: pip install -r requirements.txt
+# Sync dependencies (creates .venv and installs packages)
+uv sync
+
+# Activate virtual environment
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate  # Windows
+
+# Start the server
+python main.py
+```
+
+## Production Setup (without uv)
+
+```bash
+# Install dependencies with pip
+pip install -r requirements.txt
 
 # Start the server
 python main.py

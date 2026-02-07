@@ -144,6 +144,7 @@ ENV/
 env.bak/
 venv.bak/
 pyapi_venv_*/
+pyapi_cached_venvs/
 
 # Spyder project settings
 .spyderproject

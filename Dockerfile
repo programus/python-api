@@ -6,16 +6,14 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies and uv
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir uv
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install dependencies with uv
+# Copy requirements and install dependencies
 COPY requirements.txt .
-RUN uv pip install --system --no-cache -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY main.py .
