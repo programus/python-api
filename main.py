@@ -9,6 +9,7 @@ import tempfile
 import shutil
 import hashlib
 import json
+import time
 from pathlib import Path
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException
@@ -131,7 +132,7 @@ def save_venv_metadata(venv_name: str, lib: Optional[List[str]]):
     """Save metadata about a cached venv."""
     metadata = {
         "lib": lib or [],
-        "created_at": __import__('time').time()
+        "created_at": time.time()
     }
     metadata_path = get_venv_metadata_path(venv_name)
     with open(metadata_path, 'w') as f:
