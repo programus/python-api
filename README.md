@@ -71,6 +71,42 @@ docker build -t python-api .
 docker run -p 8000:8000 python-api
 ```
 
+## Configuration
+
+The API supports several environment variables for configuration:
+
+### Timeout Configuration
+
+- **VENV_CREATE_TIMEOUT**: Timeout in seconds for virtual environment creation (default: 30)
+- **DEPENDENCY_INSTALL_TIMEOUT**: Timeout in seconds for dependency installation (default: 300)
+- **CODE_EXECUTION_TIMEOUT**: Timeout in seconds for code execution (default: 30)
+
+Example:
+```bash
+export VENV_CREATE_TIMEOUT=60
+export DEPENDENCY_INSTALL_TIMEOUT=600
+export CODE_EXECUTION_TIMEOUT=45
+python main.py
+```
+
+Or with Docker:
+```bash
+docker run -p 8000:8000 \
+  -e VENV_CREATE_TIMEOUT=60 \
+  -e DEPENDENCY_INSTALL_TIMEOUT=600 \
+  -e CODE_EXECUTION_TIMEOUT=45 \
+  python-api
+```
+
+### Logging
+
+The API logs all commands and their output to stdout, making it easy to debug issues. Logs include:
+- Virtual environment creation commands and output
+- Dependency installation commands and output
+- Code execution commands and output
+- Timing information for all operations
+- Error messages with full stack traces
+
 ## Usage
 
 ### Starting the Server
