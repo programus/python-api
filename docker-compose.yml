@@ -1,0 +1,26 @@
+# Docker Compose for Python Code Execution API
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    # Resource limits for security
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Read-only filesystem for added security (except /tmp)
+    read_only: true
+    tmpfs:
+      - /tmp
+    # Security options
+    security_opt:
+      - no-new-privileges:true

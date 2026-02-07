@@ -11,6 +11,8 @@ A FastAPI-based Python API platform that executes Python code in isolated virtua
 
 ## Installation
 
+### Option 1: Local Installation
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/programus/python-api.git
@@ -20,6 +22,25 @@ cd python-api
 2. Install dependencies:
 ```bash
 pip install -r requirements.txt
+```
+
+### Option 2: Docker Installation (Recommended for Production)
+
+1. Clone the repository:
+```bash
+git clone https://github.com/programus/python-api.git
+cd python-api
+```
+
+2. Build and run with Docker Compose:
+```bash
+docker-compose up --build
+```
+
+Or build and run with Docker directly:
+```bash
+docker build -t python-api .
+docker run -p 8000:8000 python-api
 ```
 
 ## Usage
