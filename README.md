@@ -24,7 +24,12 @@ cd python-api
 pip install uv
 ```
 
-3. Install dependencies:
+3. Install dependencies with uv:
+```bash
+uv pip install --system -r requirements.txt
+```
+
+Or with pip:
 ```bash
 pip install -r requirements.txt
 ```

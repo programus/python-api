@@ -7,8 +7,11 @@
 # First install uv (if not already installed)
 pip install uv
 
-# Then install dependencies and run
-pip install -r requirements.txt
+# Then install dependencies with uv (or pip)
+uv pip install --system -r requirements.txt
+# Or: pip install -r requirements.txt
+
+# Start the server
 python main.py
 ```
 
