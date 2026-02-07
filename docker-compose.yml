@@ -1,0 +1,31 @@
+# Docker Compose for Python Code Execution API
+version: '3.8'
+
+services:
+  api:
+    build: .
+    image: programus/python-code-execution-api:${TAG:-latest}
+    container_name: python_code_execution_api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Set cache directory to writable tmpfs location
+      - VENV_CACHE_DIR=/tmp/pyapi_cached_venvs
+    # Resource limits for security
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Read-only filesystem for added security (except /tmp)
+    read_only: true
+    tmpfs:
+      # Mount /tmp with proper permissions for the apiuser (uid 1000)
+      - /tmp:uid=1000,gid=1000,mode=1777,exec
+    # Security options
+    security_opt:
+      - no-new-privileges:true
