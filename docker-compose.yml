@@ -10,9 +10,6 @@ services:
       - PYTHONUNBUFFERED=1
       # Set cache directory to writable tmpfs location
       - VENV_CACHE_DIR=/tmp/pyapi_cached_venvs
-      # Set SSL certificate file for pip
-      - SSL_CERT_FILE=/etc/ssl/cert.pem
-      - REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem
     # Resource limits for security
     deploy:
       resources:
@@ -22,10 +19,11 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
-    # Mount /tmp with proper permissions for the apiuser (uid 1000)
-    # exec flag is required to run python executables in venvs
+    # Read-only filesystem for added security (except /tmp)
+    read_only: true
     tmpfs:
-      - /tmp:uid=1000,gid=1000,mode=1777,exec
+      # Mount /tmp with proper permissions for the apiuser (uid 1000)
+      - /tmp:uid=1000,gid=1000,mode=1777
     # Security options
     security_opt:
       - no-new-privileges:true
