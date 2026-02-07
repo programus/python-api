@@ -152,7 +152,7 @@ def install_dependencies(venv_path: Path, dependencies: List[str]) -> tuple[bool
         logger.error(f"Timeout installing dependencies after {DEPENDENCY_INSTALL_TIMEOUT}s")
         logger.error(f"Partial STDOUT: {e.stdout if e.stdout else 'N/A'}")
         logger.error(f"Partial STDERR: {e.stderr if e.stderr else 'N/A'}")
-        return False, f"Timeout after {DEPENDENCY_INSTALL_TIMEOUT}s"
+        return False, f"Error: Dependency installation timed out ({DEPENDENCY_INSTALL_TIMEOUT} seconds limit)"
     except Exception as e:
         if os.path.exists(req_file_path):
             os.unlink(req_file_path)
