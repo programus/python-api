@@ -8,6 +8,8 @@ services:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
+      # Set cache directory to writable tmpfs location
+      - VENV_CACHE_DIR=/tmp/pyapi_cached_venvs
     # Resource limits for security
     deploy:
       resources:
@@ -20,7 +22,8 @@ services:
     # Read-only filesystem for added security (except /tmp)
     read_only: true
     tmpfs:
-      - /tmp
+      # Mount /tmp with proper permissions for the apiuser (uid 1000)
+      - /tmp:uid=1000,gid=1000,mode=1777
     # Security options
     security_opt:
       - no-new-privileges:true

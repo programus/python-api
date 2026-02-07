@@ -81,11 +81,19 @@ The API supports several environment variables for configuration:
 - **DEPENDENCY_INSTALL_TIMEOUT**: Timeout in seconds for dependency installation (default: 300)
 - **CODE_EXECUTION_TIMEOUT**: Timeout in seconds for code execution (default: 30)
 
+### Cache Directory Configuration
+
+- **VENV_CACHE_DIR**: Directory for caching named virtual environments (default: `/tmp/pyapi_cached_venvs`)
+  - Named venvs are cached here for reuse across requests
+  - Must be writable by the application user
+  - In Docker, this is automatically configured to use tmpfs
+
 Example:
 ```bash
 export VENV_CREATE_TIMEOUT=60
 export DEPENDENCY_INSTALL_TIMEOUT=600
 export CODE_EXECUTION_TIMEOUT=45
+export VENV_CACHE_DIR=/custom/cache/path
 python main.py
 ```
 
@@ -95,6 +103,8 @@ docker run -p 8000:8000 \
   -e VENV_CREATE_TIMEOUT=60 \
   -e DEPENDENCY_INSTALL_TIMEOUT=600 \
   -e CODE_EXECUTION_TIMEOUT=45 \
+  -e VENV_CACHE_DIR=/app/cache \
+  -v /host/cache:/app/cache \
   python-api
 ```
 

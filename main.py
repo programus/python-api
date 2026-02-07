@@ -32,10 +32,15 @@ VENV_CREATE_TIMEOUT = int(os.getenv("VENV_CREATE_TIMEOUT", "30"))
 DEPENDENCY_INSTALL_TIMEOUT = int(os.getenv("DEPENDENCY_INSTALL_TIMEOUT", "300"))
 CODE_EXECUTION_TIMEOUT = int(os.getenv("CODE_EXECUTION_TIMEOUT", "30"))
 
+# Configure cache directory - use environment variable or default to temp dir
+VENV_CACHE_DIR_PATH = os.getenv("VENV_CACHE_DIR", os.path.join(tempfile.gettempdir(), "pyapi_cached_venvs"))
+
 logger.info(f"Configuration loaded:")
 logger.info(f"  VENV_CREATE_TIMEOUT: {VENV_CREATE_TIMEOUT}s")
 logger.info(f"  DEPENDENCY_INSTALL_TIMEOUT: {DEPENDENCY_INSTALL_TIMEOUT}s")
 logger.info(f"  CODE_EXECUTION_TIMEOUT: {CODE_EXECUTION_TIMEOUT}s")
+logger.info(f"  VENV_CACHE_DIR: {VENV_CACHE_DIR_PATH}")
+
 
 
 app = FastAPI(
@@ -204,8 +209,18 @@ def execute_code_in_venv(venv_path: Path, code: str) -> tuple[str, str]:
 
 
 # Directory for cached virtual environments
-VENV_CACHE_DIR = Path(tempfile.gettempdir()) / "pyapi_cached_venvs"
-VENV_CACHE_DIR.mkdir(exist_ok=True)
+VENV_CACHE_DIR = Path(VENV_CACHE_DIR_PATH)
+
+# Create cache directory with proper error handling
+try:
+    VENV_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Cache directory ready: {VENV_CACHE_DIR}")
+except PermissionError as e:
+    logger.error(f"Permission denied creating cache directory {VENV_CACHE_DIR}: {e}")
+    logger.warning("Cached venvs will not be available. Only temporary venvs will work.")
+except Exception as e:
+    logger.error(f"Error creating cache directory {VENV_CACHE_DIR}: {e}")
+    logger.warning("Cached venvs may not work properly.")
 
 
 def get_venv_metadata_path(venv_name: str) -> Path:
