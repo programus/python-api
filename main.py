@@ -127,15 +127,42 @@ def install_dependencies(venv_path: Path, dependencies: List[str]) -> tuple[bool
     
     logger.info(f"Created temporary requirements file: {req_file_path}")
     
-    cmd = [str(pip_path), "install", "-r", req_file_path]
+    # Use CA certificate from accessible location
+    # Try multiple cert file locations in order of preference
+    cert_candidates = [
+        '/usr/local/share/ca-certificates.crt',  # Our custom copy
+        '/etc/ssl/cert.pem',  # Standard location
+    ]
+    cert_file = next((f for f in cert_candidates if os.path.exists(f)), None)
+    
+    if cert_file:
+        logger.info(f"Using certificate file: {cert_file}")
+        cmd = [str(pip_path), "install", "--cert", cert_file, "-r", req_file_path]
+    else:
+        logger.warning("No accessible certificate file found, proceeding without --cert flag")
+        cmd = [str(pip_path), "install", "-r", req_file_path]
     logger.info(f"Command: {' '.join(cmd)}")
+    
+    # Prepare environment with SSL certificate settings
+    env = os.environ.copy()
+    # Use accessible certificate file location
+    cert_candidates = [
+        '/usr/local/share/ca-certificates.crt',  # Our custom copy
+        '/etc/ssl/cert.pem',  # Standard location
+    ]
+    accessible_cert = next((f for f in cert_candidates if os.path.exists(f)), None)
+    if accessible_cert:
+        env['SSL_CERT_FILE'] = accessible_cert
+        env['REQUESTS_CA_BUNDLE'] = accessible_cert
+        logger.info(f"Set SSL_CERT_FILE and REQUESTS_CA_BUNDLE to: {accessible_cert}")
     
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=DEPENDENCY_INSTALL_TIMEOUT
+            timeout=DEPENDENCY_INSTALL_TIMEOUT,
+            env=env
         )
         os.unlink(req_file_path)
         
