@@ -5,8 +5,8 @@ A FastAPI-based Python API platform that executes Python code in isolated virtua
 ## Features
 
 - **Code Execution Endpoint**: Accepts JSON with Python code and dependencies, returns execution results
-- **Isolated Execution**: Each code execution runs in a separate Python virtual environment
-- **Dependency Management**: Automatically installs required libraries before code execution
+- **Isolated Execution**: Each code execution runs in a separate Python virtual environment created with `uv`
+- **Fast Dependency Management**: Uses `uv` for ultra-fast package installation
 - **Error Handling**: Captures and reports both standard output and errors
 
 ## Installation
@@ -19,7 +19,12 @@ git clone https://github.com/programus/python-api.git
 cd python-api
 ```
 
-2. Install dependencies:
+2. Install `uv` (if not already installed):
+```bash
+pip install uv
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```

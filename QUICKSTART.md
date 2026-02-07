@@ -4,6 +4,10 @@
 
 ```bash
 # Local installation
+# First install uv (if not already installed)
+pip install uv
+
+# Then install dependencies and run
 pip install -r requirements.txt
 python main.py
 ```

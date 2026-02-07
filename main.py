@@ -36,10 +36,10 @@ class CodeExecutionResponse(BaseModel):
 
 
 def create_venv(venv_path: Path) -> bool:
-    """Create a virtual environment at the specified path."""
+    """Create a virtual environment at the specified path using uv."""
     try:
         subprocess.run(
-            [sys.executable, "-m", "venv", str(venv_path)],
+            ["uv", "venv", str(venv_path)],
             check=True,
             capture_output=True,
             text=True,
@@ -51,15 +51,9 @@ def create_venv(venv_path: Path) -> bool:
 
 
 def install_dependencies(venv_path: Path, dependencies: List[str]) -> tuple[bool, str]:
-    """Install dependencies in the virtual environment."""
+    """Install dependencies in the virtual environment using uv."""
     if not dependencies:
         return True, ""
-    
-    # Determine pip executable path
-    if sys.platform == "win32":
-        pip_path = venv_path / "Scripts" / "pip"
-    else:
-        pip_path = venv_path / "bin" / "pip"
     
     # Create a temporary requirements file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as req_file:
@@ -68,7 +62,7 @@ def install_dependencies(venv_path: Path, dependencies: List[str]) -> tuple[bool
     
     try:
         result = subprocess.run(
-            [str(pip_path), "install", "-r", req_file_path],
+            ["uv", "pip", "install", "-r", req_file_path, "--python", str(venv_path)],
             capture_output=True,
             text=True,
             timeout=300
